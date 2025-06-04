@@ -1,0 +1,32 @@
+# Java
+*.class
+*.log
+*.jar
+*.war
+
+# Maven
+/target/
+.mvn/wrapper/maven-wrapper.jar
+
+# H2 Database (if ever persisted)
+/*.mv.db
+/*.h2.db
+
+# IDEs
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/
+*.iml
+
+# NetBeans (if not used, can remove)
+nbproject/
+build/
+dist/
+
+# STS (Spring Tool Suite) - optional
+.apt_generated/
+.factorypath/
+.springBeans/
+.sts4-cache/
