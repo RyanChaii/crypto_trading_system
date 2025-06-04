@@ -40,4 +40,12 @@ public class AggregatedPrice {
     @Column(name = "date_time")
     @Setter
     private LocalDateTime dateTime;
+
+    public AggregatedPrice(String pairType, BigDecimal bidPrice, BigDecimal askPrice, String source, LocalDateTime dateTime){
+        this.pairType = pairType;
+        this.bidPrice = bidPrice;
+        this.askPrice = askPrice;
+        this.source = source;
+        this.dateTime = dateTime;
+    }
 }
