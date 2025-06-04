@@ -1,0 +1,39 @@
+1. UserWallet
+Note: 
+- Each user can have multiple wallet records, each currency type can have one.
+- 3 types of currency base on requirement,
+	a. USDT, a type of currency used to price the asset. In general, 1 USD = 1 USDT. Avoid volatile. Used as the base currency for trading pairs. Use it to trade crypto without dealing with banks or real dollar.
+	b. BTC, Bit coin
+	c. ETH, Ethereum
+ERD
+- id (PK), must be unique
+- user_id, identify user
+- crypto_currency, identify which currency is being used
+- wallet_balance, how much is left
+
+2. TradeTransaction
+Note:
+- As per stated in requirement, user have already been authenticated.
+- User can choose to buy or sell the pair 
+ERD
+- id (PK), must be unique
+- user_id, identify user
+- trade_type, buy or sell
+- pair_type, BTCUSDT or ETHUSDT
+- price, how much for each of it
+- amount, how many in transaction
+- total_value, calculated in USDT
+- date_time, recording of the transaction
+
+3. AggregatedPrice
+Note:
+- Retrieve from a source, either Binance or Huobi
+- Only BTCUSDT or ETHUSDT are taken into consideration
+- Bid & ask price comes together with it
+ERD
+- id (PK), must be unique
+- pair_type, BTCUSDT or ETHUSDT
+- bid_price, the highest price a buyer is willing to pay for
+- ask_price, the lowest price a selling is willing to sell for
+- source, based on the 2 api, either Binance or Houbi
+- date_time, recording of the information as of when
