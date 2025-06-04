@@ -1,0 +1,43 @@
+package com.personal.crypto.system.crypto_service.model;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+
+@Entity
+@Table(name = "aggregated_price")
+@Getter
+public class AggregatedPrice {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "pair_type")
+    @Setter
+    private String pairType;
+
+    @Column(name = "bid_price")
+    @Setter
+    private BigDecimal bidPrice;
+
+    @Column(name = "ask_price")
+    @Setter
+    private BigDecimal askPrice;
+
+    @Column(name = "source")
+    @Setter
+    private String source;
+
+    @Column(name = "date_time")
+    @Setter
+    private LocalDateTime dateTime;
+}
