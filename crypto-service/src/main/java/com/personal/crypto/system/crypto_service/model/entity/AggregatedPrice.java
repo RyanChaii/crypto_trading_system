@@ -1,4 +1,4 @@
-package com.personal.crypto.system.crypto_service.model;
+package com.personal.crypto.system.crypto_service.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

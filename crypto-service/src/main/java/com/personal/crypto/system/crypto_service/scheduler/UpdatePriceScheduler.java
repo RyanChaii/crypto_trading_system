@@ -8,9 +8,9 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.personal.crypto.system.crypto_service.model.AggregatedPrice;
-import com.personal.crypto.system.crypto_service.model.Binance;
-import com.personal.crypto.system.crypto_service.model.Houbi;
+import com.personal.crypto.system.crypto_service.model.entity.AggregatedPrice;
+import com.personal.crypto.system.crypto_service.model.pojo.Binance;
+import com.personal.crypto.system.crypto_service.model.pojo.Houbi;
 import com.personal.crypto.system.crypto_service.repository.AggregatedPriceRepository;
 
 import java.time.LocalDateTime;

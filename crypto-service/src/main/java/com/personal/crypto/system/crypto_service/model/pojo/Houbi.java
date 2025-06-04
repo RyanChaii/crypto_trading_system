@@ -1,4 +1,4 @@
-package com.personal.crypto.system.crypto_service.model;
+package com.personal.crypto.system.crypto_service.model.pojo;
 
 import java.math.BigDecimal;
 
@@ -11,14 +11,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Binance {
-    
+public class Houbi {
+
     @JsonProperty("symbol")
     private String symbol;
 
-    @JsonProperty("bidPrice")
-    private BigDecimal bidPrice;
+    @JsonProperty("bid")
+    private BigDecimal bid;
 
-    @JsonProperty("askPrice")
-    private BigDecimal askPrice;
+    @JsonProperty("ask")
+    private BigDecimal ask;
 }
