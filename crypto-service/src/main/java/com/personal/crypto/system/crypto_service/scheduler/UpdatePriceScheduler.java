@@ -11,11 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.personal.crypto.system.crypto_service.model.AggregatedPrice;
 import com.personal.crypto.system.crypto_service.model.Binance;
 import com.personal.crypto.system.crypto_service.model.Houbi;
+import com.personal.crypto.system.crypto_service.repository.AggregatedPriceRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.jpa.JpaSystemException;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -37,6 +40,9 @@ public class UpdatePriceScheduler {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private AggregatedPriceRepository aggregatedPriceRepository;
 
     // constructor-based dependency injection
     public UpdatePriceScheduler(Environment env) {
@@ -55,9 +61,10 @@ public class UpdatePriceScheduler {
         allNewPricing.addAll(binanceData);
         allNewPricing.addAll(houbiData);
 
-        // Retrieve from db
-        // compare bid and ask prices
-        // store the best one into AggregatedPrice table
+        // From each of the latest price, insert or update into database
+        for (AggregatedPrice newAggrPrice : allNewPricing) {
+            compareAndStoreBestPrice(newAggrPrice);
+        }
     }
 
     private List<AggregatedPrice> fetchFromBinance() {
@@ -70,10 +77,10 @@ public class UpdatePriceScheduler {
             // Filter each data that matches btcusdt or ethusdt, from the filtered data, create AggregatedPrice object
             filteredBinance = Arrays.stream(binanceData)
                 .filter(data -> "btcusdt".equals(data.getSymbol().toLowerCase()) || "ethusdt".equals(data.getSymbol().toLowerCase()))
-                .map(filteredData -> new AggregatedPrice(filteredData.getSymbol(), filteredData.getBidPrice(), filteredData.getAskPrice(), "binance", LocalDateTime.now()))
+                .map(filteredData -> new AggregatedPrice(filteredData.getSymbol().toLowerCase(), filteredData.getBidPrice(), filteredData.getAskPrice(), "binance", LocalDateTime.now()))
                 .collect(Collectors.toList());
 
-            log.info("Successfully updated latest price from Binance");
+            log.info("Successfully retrieved latest price from Binance");
         }
         catch (RestClientException e) {
             log.atError().withThrowable(e).log("Binance api call failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
@@ -96,10 +103,10 @@ public class UpdatePriceScheduler {
             // Filter each data that matches btcusdt or ethusdt, from the filtered data, create AggregatedPrice object
             filteredHoubi = Arrays.stream(houbiData)
                 .filter(data -> "btcusdt".equals(data.getSymbol().toLowerCase()) || "ethusdt".equals(data.getSymbol().toLowerCase()))
-                .map(filteredData -> new AggregatedPrice(filteredData.getSymbol(), filteredData.getBid(), filteredData.getAsk(), "houbi", LocalDateTime.now()))
+                .map(filteredData -> new AggregatedPrice(filteredData.getSymbol().toLowerCase(), filteredData.getBid(), filteredData.getAsk(), "houbi", LocalDateTime.now()))
                 .collect(Collectors.toList());
 
-            log.info("Successfully updated latest price from Houbi");
+            log.info("Successfully retrieved latest price from Houbi");
         }
         catch (RestClientException e) {
             log.atError().withThrowable(e).log("Houbi api call failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
@@ -108,5 +115,36 @@ public class UpdatePriceScheduler {
             log.atError().withThrowable(e).log("Houbi api call json processing failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return filteredHoubi;
+    }
+
+    private void compareAndStoreBestPrice(AggregatedPrice newPrice) {
+
+        // Retrieve record from db
+        Optional<AggregatedPrice> existingPrice = aggregatedPriceRepository.findByPairTypeAndSource(newPrice.getPairType(), newPrice.getSource());
+
+        try {
+            // Update the price
+            if (existingPrice.isPresent()) {
+                AggregatedPrice updatedPrice = existingPrice.get();
+                updatedPrice.setBidPrice(newPrice.getBidPrice());
+                updatedPrice.setAskPrice(newPrice.getAskPrice());
+                updatedPrice.setDateTime(LocalDateTime.now());
+
+                aggregatedPriceRepository.save(updatedPrice);
+                log.info("Updated latest price for {} from {}", updatedPrice.getPairType(), updatedPrice.getSource());
+            }
+            // Store as the new best pricing
+            else{
+                aggregatedPriceRepository.save(newPrice);
+                log.info("Added {} from {} to the database", newPrice.getPairType(), newPrice.getSource());
+            }
+        }
+        catch (JpaSystemException e) {
+            log.atError().withThrowable(e).log("JPA system exception: {}", e.getMessage());
+        } 
+        catch (Exception e) {
+            log.atError().withThrowable(e).log("Unexpected error: {}", e.getMessage());
+        }
+        
     }
 }

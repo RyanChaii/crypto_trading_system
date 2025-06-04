@@ -37,3 +37,6 @@ ERD
 - ask_price, the lowest price a selling is willing to sell for
 - source, based on the 2 api, either Binance or Houbi
 - date_time, recording of the information as of when
+
+Additional note
+- Best price would means storing the latest record for each of the btcusdt & ethusdt from each of the source
