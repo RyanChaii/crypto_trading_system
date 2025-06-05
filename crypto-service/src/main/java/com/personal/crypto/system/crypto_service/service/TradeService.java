@@ -38,76 +38,85 @@ public class TradeService {
         // Validate incoming trade request
         requestValidation(incomingTrade);
 
-        // Retrieve best price from price service
-        Map<String, AggregatedPriceResponse> bestPrice = priceService.getBestAggregatedPrices();
-
-        // Retrieve user's wallet balance for usdt & incoming trade type
-        UserWallet userUsdtWallet = userWalletRepository.findByUserIdAndCryptoCurrency(incomingTrade.getUserId(), "USDT")
-        .orElseThrow(() -> new RuntimeException("No USDT wallet"));
-        UserWallet userTradeWallet = userWalletRepository.findByUserIdAndCryptoCurrency(incomingTrade.getUserId(), incomingTrade.getCryptoType())
-        .orElseThrow(() -> new RuntimeException("No " + incomingTrade.getCryptoType() + " wallet"));
-
-        String formattedCurrencyType = incomingTrade.getCryptoType().toLowerCase() + "usdt";
-        // Retrieve the best price based on desired currency
-        AggregatedPriceResponse bestCurrencyPrice = bestPrice.get(formattedCurrencyType);
-        BigDecimal quantity = incomingTrade.getQuantity();
-        String userId = incomingTrade.getUserId();
-
         // Craft trade response
-        TradeResponse tradeStatusResponse = new TradeResponse("", formattedCurrencyType, new BigDecimal("0"), new BigDecimal("0"));
+        TradeResponse tradeStatusResponse = new TradeResponse("", "", new BigDecimal("0"), new BigDecimal("0"));
 
-        if ("buy".equalsIgnoreCase(incomingTrade.getPurchaseType())) {
+        try {
+            // Retrieve best price from price service
+            Map<String, AggregatedPriceResponse> bestPrice = priceService.getBestAggregatedPrices();
 
-            // Retrieve best ask price
-            BigDecimal bestAskPrice = bestCurrencyPrice.getBestAsk();
-            BigDecimal totalAskCost = quantity.multiply(bestAskPrice);
+            // Retrieve user's wallet balance for usdt & incoming trade type
+            UserWallet userUsdtWallet = userWalletRepository.findByUserIdAndCryptoCurrency(incomingTrade.getUserId(), "USDT")
+            .orElseThrow(() -> new RuntimeException("No USDT wallet"));
+            UserWallet userTradeWallet = userWalletRepository.findByUserIdAndCryptoCurrency(incomingTrade.getUserId(), incomingTrade.getCryptoType())
+            .orElseThrow(() -> new RuntimeException("No " + incomingTrade.getCryptoType() + " wallet"));
 
-            // Not enough balance, cannot buy
-            if (userUsdtWallet.getWalletBalance().compareTo(totalAskCost) < 0) {
-                throw new IllegalArgumentException("Insufficient USDT balance");
+            String formattedCurrencyType = incomingTrade.getCryptoType().toLowerCase() + "usdt";
+            // Retrieve the best price based on desired currency
+            AggregatedPriceResponse bestCurrencyPrice = bestPrice.get(formattedCurrencyType);
+            BigDecimal quantity = incomingTrade.getQuantity();
+            String userId = incomingTrade.getUserId();
+
+            // Craft trade response
+            tradeStatusResponse.setPairType(formattedCurrencyType);
+
+            if ("buy".equalsIgnoreCase(incomingTrade.getPurchaseType())) {
+
+                // Retrieve best ask price
+                BigDecimal bestAskPrice = bestCurrencyPrice.getBestAsk();
+                BigDecimal totalAskCost = quantity.multiply(bestAskPrice);
+
+                // Not enough balance, cannot buy
+                if (userUsdtWallet.getWalletBalance().compareTo(totalAskCost) < 0) {
+                    throw new IllegalArgumentException("Insufficient USDT balance");
+                }
+
+                // Detuct user's usdt wallet balance & update DB
+                BigDecimal remainingUsdt = processUsdtWallet(userUsdtWallet, totalAskCost, "buy");
+
+                // Add user's crypto wallet balance & update DB
+                BigDecimal newCryptoBalance = processCryptoWallet(userTradeWallet, quantity, "buy");
+
+                // Update trade response
+                tradeStatusResponse.setMessage("Successful purchase of " + incomingTrade.getCryptoType());
+                tradeStatusResponse.setNewUsdtBalance(remainingUsdt);
+                tradeStatusResponse.setCryptoBalance(newCryptoBalance);
+
+                // Create trade record
+                createTransactionRecord(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestAskPrice, quantity, totalAskCost);
             }
 
-            // Detuct user's usdt wallet balance & update DB
-            BigDecimal remainingUsdt = processUsdtWallet(userUsdtWallet, totalAskCost, "buy");
+            if ("sell".equalsIgnoreCase(incomingTrade.getPurchaseType())) {
 
-            // Add user's crypto wallet balance & update DB
-            BigDecimal newCryptoBalance = processCryptoWallet(userTradeWallet, quantity, "buy");
+                // Retrieve best bid price
+                BigDecimal bestBidPrice = bestCurrencyPrice.getBestBid();
+                BigDecimal totalBidCost = quantity.multiply(bestBidPrice);
 
-            // Update trade response
-            tradeStatusResponse.setMessage("Successful purchase of " + incomingTrade.getCryptoType());
-            tradeStatusResponse.setNewUsdtBalance(remainingUsdt);
-            tradeStatusResponse.setCryptoBalance(newCryptoBalance);
+                // Not enough crypto, cannot sell
+                if (userTradeWallet.getWalletBalance().compareTo(quantity) < 0) {
+                    throw new IllegalArgumentException("Insufficient crypto balance");
+                }
 
-            // Create trade record
-            createTransactionRecord(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestAskPrice, quantity, totalAskCost);
-        }
+                // Add user's usdt wallet balance & update DB
+                BigDecimal remainingUsdt = processUsdtWallet(userUsdtWallet, totalBidCost, "sell");
 
-        if ("sell".equalsIgnoreCase(incomingTrade.getPurchaseType())) {
+                // Detuct user's crypto wallet balance & update DB
+                BigDecimal newCryptoBalance = processCryptoWallet(userTradeWallet, quantity, "sell");
 
-             // Retrieve best bid price
-            BigDecimal bestBidPrice = bestCurrencyPrice.getBestBid();
-            BigDecimal totalBidCost = quantity.multiply(bestBidPrice);
+                // Update trade response
+                tradeStatusResponse.setMessage("Successful selling of " + incomingTrade.getCryptoType());
+                tradeStatusResponse.setNewUsdtBalance(remainingUsdt);
+                tradeStatusResponse.setCryptoBalance(newCryptoBalance);
 
-            // Not enough crypto, cannot sell
-            if (userTradeWallet.getWalletBalance().compareTo(quantity) < 0) {
-                throw new IllegalArgumentException("Insufficient crypto balance");
+                // Create trade record
+                createTransactionRecord(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestBidPrice, quantity, totalBidCost);
             }
-
-            // Add user's usdt wallet balance & update DB
-            BigDecimal remainingUsdt = processUsdtWallet(userUsdtWallet, totalBidCost, "sell");
-
-            // Detuct user's crypto wallet balance & update DB
-            BigDecimal newCryptoBalance = processCryptoWallet(userTradeWallet, quantity, "sell");
-
-            // Update trade response
-            tradeStatusResponse.setMessage("Successful selling of " + incomingTrade.getCryptoType());
-            tradeStatusResponse.setNewUsdtBalance(remainingUsdt);
-            tradeStatusResponse.setCryptoBalance(newCryptoBalance);
-
-            // Create trade record
-            createTransactionRecord(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestBidPrice, quantity, totalBidCost);
         }
 
+        catch (Exception e) {
+            log.atError().withThrowable(e).log("Unexpected error: {}", e.getMessage());
+        }
+        
         return tradeStatusResponse;
     }
 
