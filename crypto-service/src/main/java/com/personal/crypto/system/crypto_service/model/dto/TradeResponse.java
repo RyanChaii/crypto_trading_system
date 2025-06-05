@@ -10,13 +10,13 @@ import lombok.Setter;
 public class TradeResponse {
     
     private String message;
-    private String cryptoType;
+    private String pairType;
     private BigDecimal newUsdtBalance;
     private BigDecimal cryptoBalance;
 
-    public TradeResponse(String message, String cryptoType, BigDecimal newUsdtBalance, BigDecimal cryptoBalance) {
+    public TradeResponse(String message, String pairType, BigDecimal newUsdtBalance, BigDecimal cryptoBalance) {
         this.message = message;
-        this.cryptoType = cryptoType;
+        this.pairType = pairType;
         this.newUsdtBalance = newUsdtBalance;
         this.cryptoBalance = cryptoBalance;
     }

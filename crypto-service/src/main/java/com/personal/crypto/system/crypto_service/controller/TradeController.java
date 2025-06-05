@@ -22,8 +22,6 @@ public class TradeController {
 
     @PostMapping("/processorder")
     public ResponseEntity<TradeResponse> performTrade(@RequestBody TradeRequest incomingRequest) {
-        tradeService.processTrade(incomingRequest);
-        return null;
-        // return ResponseEntity.ok(tradeService)
+        return ResponseEntity.ok(tradeService.processTrade(incomingRequest));
     }
 }

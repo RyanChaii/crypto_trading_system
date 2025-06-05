@@ -49,6 +49,9 @@ public class TradeService {
         BigDecimal quantity = incomingTrade.getQuantity();
         String userId = incomingTrade.getUserId();
 
+        // Craft trade response
+        TradeResponse tradeStatusResponse = new TradeResponse("", formattedCurrencyType, new BigDecimal("0"), new BigDecimal("0"));
+
         if ("buy".equalsIgnoreCase(incomingTrade.getPurchaseType())) {
 
             // Retrieve best ask price
@@ -61,18 +64,18 @@ public class TradeService {
             }
 
             // Detuct user's usdt wallet balance & update DB
-            userUsdtWallet.setWalletBalance(userUsdtWallet.getWalletBalance().subtract(totalAskCost));
-            userWalletRepository.save(userUsdtWallet);
+            BigDecimal remainingUsdt = processUsdtWallet(userUsdtWallet, totalAskCost, "buy");
 
-            // Update user's wallet on the successful purchase
-            userTradeWallet.setWalletBalance(userTradeWallet.getWalletBalance().add(quantity));
-            userWalletRepository.save(userTradeWallet);
+            // Add user's crypto wallet balance & update DB
+            BigDecimal newCryptoBalance = processCryptoWallet(userTradeWallet, quantity, "buy");
+
+            // Update trade response
+            tradeStatusResponse.setMessage("Successful purchase of " + incomingTrade.getCryptoType());
+            tradeStatusResponse.setNewUsdtBalance(remainingUsdt);
+            tradeStatusResponse.setCryptoBalance(newCryptoBalance);
 
             // Create trade record
-            TradeTransaction newRecord = new 
-            TradeTransaction(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestAskPrice, quantity, totalAskCost, LocalDateTime.now());
-            // Save the record
-            tradeTransactionRepository.save(newRecord);
+            createTransactionRecord(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestAskPrice, quantity, totalAskCost);
         }
 
         if ("sell".equalsIgnoreCase(incomingTrade.getPurchaseType())) {
@@ -87,23 +90,56 @@ public class TradeService {
             }
 
             // Add user's usdt wallet balance & update DB
-            userUsdtWallet.setWalletBalance(userUsdtWallet.getWalletBalance().add(totalBidCost));
-            userWalletRepository.save(userUsdtWallet);
+            BigDecimal remainingUsdt = processUsdtWallet(userUsdtWallet, totalBidCost, "sell");
 
-            // Update user's wallet on the successful sold
-            userTradeWallet.setWalletBalance(userTradeWallet.getWalletBalance().subtract(quantity));
-            userWalletRepository.save(userTradeWallet);
+            // Detuct user's crypto wallet balance & update DB
+            BigDecimal newCryptoBalance = processCryptoWallet(userTradeWallet, quantity, "sell");
+
+            // Update trade response
+            tradeStatusResponse.setMessage("Successful selling of " + incomingTrade.getCryptoType());
+            tradeStatusResponse.setNewUsdtBalance(remainingUsdt);
+            tradeStatusResponse.setCryptoBalance(newCryptoBalance);
 
             // Create trade record
-            TradeTransaction newRecord = new 
-            TradeTransaction(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestBidPrice, quantity, totalBidCost, LocalDateTime.now());
-            // Save the record
-            tradeTransactionRepository.save(newRecord);
+            createTransactionRecord(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestBidPrice, quantity, totalBidCost);
         }
 
+        return tradeStatusResponse;
+    }
 
+    // For either buy or sell
+    public BigDecimal processUsdtWallet (UserWallet userUsdtWallet, BigDecimal price, String purchaseMode) {
+        BigDecimal usdtAmount = new BigDecimal("0");
+        if ("buy".equalsIgnoreCase(purchaseMode)) {
+            usdtAmount = userUsdtWallet.getWalletBalance().subtract(price);
+        }
+        else {
+            usdtAmount = userUsdtWallet.getWalletBalance().add(price);
+        }
+        userUsdtWallet.setWalletBalance(usdtAmount);
+        userWalletRepository.save(userUsdtWallet);
+        return usdtAmount;
+    }
 
+    public BigDecimal processCryptoWallet (UserWallet userTradeWallet, BigDecimal amount, String purchaseMode) {
+        BigDecimal cryptoAmount = new BigDecimal("0");
+        if ("buy".equalsIgnoreCase(purchaseMode)) {
+            cryptoAmount = userTradeWallet.getWalletBalance().add(amount);
+        }
+        else {
+            cryptoAmount = userTradeWallet.getWalletBalance().subtract(amount);
+        }
+        userTradeWallet.setWalletBalance(cryptoAmount);
+        userWalletRepository.save(userTradeWallet);
+        return cryptoAmount;
+    }
 
-        return null;
+    public void createTransactionRecord(String userId, String purchaseType, String pairType, BigDecimal price, BigDecimal quantity, BigDecimal totalCost) {
+        // Create trade record
+        TradeTransaction newRecord = new 
+        TradeTransaction(userId, purchaseType, pairType, price, quantity, totalCost, LocalDateTime.now());
+        // Save the record
+        tradeTransactionRepository.save(newRecord);
+        log.info("Successful transaction recorded");
     }
 }
