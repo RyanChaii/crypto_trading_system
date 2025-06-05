@@ -18,3 +18,27 @@
         "bestAsk": 2611.32
     }
 }
+```
+
+## 2. Trade Based For The Latest Best Aggregated Price
+**URL:** `POST /api/trade/processorder`
+
+**Description:** Post request to buy or sell BTC and ETH and return the transaction record.
+**Request:**
+```json
+{
+    "userId" : "test-user",
+    "cryptoType" : "BTC",
+    "purchaseType" : "sell",
+    "quantity" : "0.015"
+}
+```
+**Response:**
+```json
+{
+    "message": "Successful selling of BTC",
+    "pairType": "btcusdt",
+    "newUsdtBalance": 44768.10350000000,
+    "cryptoBalance": 0.05000000
+}
+```
