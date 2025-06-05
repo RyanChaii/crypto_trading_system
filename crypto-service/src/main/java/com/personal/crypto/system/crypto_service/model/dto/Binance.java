@@ -1,4 +1,4 @@
-package com.personal.crypto.system.crypto_service.model.pojo;
+package com.personal.crypto.system.crypto_service.model.dto;
 
 import java.math.BigDecimal;
 
