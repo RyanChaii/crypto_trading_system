@@ -58,6 +58,7 @@ public class PriceService {
         }
         catch (Exception e) {
             log.atError().withThrowable(e).log("Unexpected error: {}", e.getMessage());
+            throw new IllegalStateException("Unexpected error");
         }
         
         return bestResult;

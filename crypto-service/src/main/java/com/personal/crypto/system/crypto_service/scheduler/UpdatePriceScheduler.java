@@ -86,9 +86,11 @@ public class UpdatePriceScheduler {
         }
         catch (RestClientException e) {
             log.atError().withThrowable(e).log("Binance api call failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new IllegalStateException(e.getMessage());
         }
         catch (JsonProcessingException e) {
             log.atError().withThrowable(e).log("Binance api call json processing failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new IllegalStateException("Binance api call json processing failed");
         }
         return filteredBinance;
     }
@@ -112,9 +114,11 @@ public class UpdatePriceScheduler {
         }
         catch (RestClientException e) {
             log.atError().withThrowable(e).log("Houbi api call failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new IllegalStateException(e.getMessage());
         }
         catch (JsonProcessingException e) {
             log.atError().withThrowable(e).log("Houbi api call json processing failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
+            throw new IllegalStateException("Houbi api call json processing failed");
         }
         return filteredHoubi;
     }
@@ -143,9 +147,11 @@ public class UpdatePriceScheduler {
         }
         catch (JpaSystemException e) {
             log.atError().withThrowable(e).log("JPA system exception: {}", e.getMessage());
+            throw new IllegalStateException("JPA system exception");
         } 
         catch (Exception e) {
             log.atError().withThrowable(e).log("Unexpected error: {}", e.getMessage());
+            throw new IllegalStateException("Unexpected error");
         }
         
     }
