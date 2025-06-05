@@ -68,3 +68,52 @@
     }
 ]
 ```
+
+## 4. Retrieve User's Trading History
+**URL:** `GET /api/trade/history`
+
+**Description:** Get request that retrieve all trade transaction made by the user.
+
+**Request Header:** `key: usedId, value: test-user`
+
+**Response:**
+```json
+[
+    {
+        "userId": "test-user",
+        "tradeType": "sell",
+        "pairType": "btcusdt",
+        "price": 104127.00000000,
+        "amount": 0.01000000,
+        "totalPrice": 1041.27000000,
+        "transactionDateTime": "2025-06-05T22:17:03.073929"
+    },
+    {
+        "userId": "test-user",
+        "tradeType": "buy",
+        "pairType": "btcusdt",
+        "price": 104112.11000000,
+        "amount": 0.05000000,
+        "totalPrice": 5205.60550000,
+        "transactionDateTime": "2025-06-05T22:16:56.860793"
+    },
+    {
+        "userId": "test-user",
+        "tradeType": "buy",
+        "pairType": "ethusdt",
+        "price": 2586.92000000,
+        "amount": 1.50000000,
+        "totalPrice": 3880.38000000,
+        "transactionDateTime": "2025-06-05T22:16:42.489303"
+    },
+    {
+        "userId": "test-user",
+        "tradeType": "buy",
+        "pairType": "ethusdt",
+        "price": 2586.31000000,
+        "amount": 0.50000000,
+        "totalPrice": 1293.15500000,
+        "transactionDateTime": "2025-06-05T22:16:37.122493"
+    }
+]
+```

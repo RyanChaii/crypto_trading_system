@@ -58,4 +58,8 @@ public class TradeTransaction {
         this.totalValue = totalValue;
         this.dateTime = dateTime;
     }
+
+    public TradeTransaction () {
+        
+    }
 }
