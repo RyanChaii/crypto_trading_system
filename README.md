@@ -8,6 +8,17 @@
 
 [API Documentation](./docs/API-DOC.md)
 
+[Postman Collection](https://github.com/RyanChaii/crypto_trading_system/blob/bcf28790d66777f8a149dbdb3fd386a0d5e7bc04/docs/Crypto%20Trading%20System.postman_collection.json)
+
+## Java Version 
+
+Tested with **OpenJDK 21 (Temurin 21.0.7 LTS)**
+
+To run the application from your IDE:
+
+- Navigate to `crypto-service\src\main\java\com\personal\crypto\system\crypto_service\CryptoServiceApplication.java`
+- Right-click the file and select **Run 'CryptoServiceApplication'**
+
 ## Database
 
 ```
@@ -27,7 +38,6 @@ Password: (leave blank)
 - Sample data is seeded via data.sql
 
 > File location: src\main\resources\
-
 
 ## Unit Testing
 
@@ -55,6 +65,4 @@ Password: (leave blank)
 
 right-click the TradeServiceTest.java file -> Run java
 
-> File location: src\test\java\com\personal\crypto\system\crypto_service\
-
-
+> File location: src\test\java\com\personal\crypto\system\crypto_service\TradeServiceTest.java
