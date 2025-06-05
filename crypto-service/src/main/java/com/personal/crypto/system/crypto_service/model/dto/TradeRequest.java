@@ -12,12 +12,12 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TradeRequest {
 
-    private Long userId;
+    private String userId;
     private String pairType;
-    private String purchaseType;
+    private String purchaseType; // buy or sell
     private BigDecimal quantity;
 
-    public TradeRequest(Long userId, String pairType, String purchaseType, BigDecimal quantity) {
+    public TradeRequest(String userId, String pairType, String purchaseType, BigDecimal quantity) {
         this.userId = userId;
         this.pairType = pairType;
         this.purchaseType = purchaseType;
