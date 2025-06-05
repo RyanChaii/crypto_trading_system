@@ -28,7 +28,7 @@ public class UserWallet {
     @Setter
     private String cryptoCurrency;
 
-    @Column(name = "wallet_balance")
+    @Column(name = "wallet_balance", precision = 18, scale = 8)
     @Setter
     private BigDecimal walletBalance;
 }
