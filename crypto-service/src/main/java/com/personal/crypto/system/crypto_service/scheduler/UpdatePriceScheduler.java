@@ -65,13 +65,15 @@ public class UpdatePriceScheduler {
         for (AggregatedPrice newAggrPrice : allNewPricing) {
             compareAndStoreBestPrice(newAggrPrice);
         }
+
+        log.info("Prices successfully updated");
     }
 
     private List<AggregatedPrice> fetchFromBinance() {
         List<AggregatedPrice> filteredBinance = new ArrayList<>();
         try {
             ResponseEntity<String> binanceResponse = restTemplate.exchange(binanceUrl, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), String.class);
-            log.info("Binance connected successfully");
+            // log.info("Binance connected successfully");
             ObjectMapper mapper = new ObjectMapper();
             Binance[] binanceData = mapper.readValue(binanceResponse.getBody(), Binance[].class);
             // Filter each data that matches btcusdt or ethusdt, from the filtered data, create AggregatedPrice object
@@ -80,7 +82,7 @@ public class UpdatePriceScheduler {
                 .map(filteredData -> new AggregatedPrice(filteredData.getSymbol().toLowerCase(), filteredData.getBidPrice(), filteredData.getAskPrice(), "binance", LocalDateTime.now()))
                 .collect(Collectors.toList());
 
-            log.info("Successfully retrieved latest price from Binance");
+            // log.info("Successfully retrieved latest price from Binance");
         }
         catch (RestClientException e) {
             log.atError().withThrowable(e).log("Binance api call failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
@@ -95,7 +97,7 @@ public class UpdatePriceScheduler {
         List<AggregatedPrice> filteredHoubi = new ArrayList<>();
         try {
             ResponseEntity<String> houbiResponse = restTemplate.exchange(houbiUrl, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), String.class);
-            log.info("Houbi connected successfully");
+            // log.info("Houbi connected successfully");
             ObjectMapper mapper = new ObjectMapper();
             JsonNode jsonRoot = mapper.readTree(houbiResponse.getBody());
             JsonNode innerData = jsonRoot.get("data");
@@ -106,7 +108,7 @@ public class UpdatePriceScheduler {
                 .map(filteredData -> new AggregatedPrice(filteredData.getSymbol().toLowerCase(), filteredData.getBid(), filteredData.getAsk(), "houbi", LocalDateTime.now()))
                 .collect(Collectors.toList());
 
-            log.info("Successfully retrieved latest price from Houbi");
+            // log.info("Successfully retrieved latest price from Houbi");
         }
         catch (RestClientException e) {
             log.atError().withThrowable(e).log("Houbi api call failed with status {}: {}", HttpStatus.BAD_REQUEST, e.getMessage());
@@ -131,12 +133,12 @@ public class UpdatePriceScheduler {
                 updatedPrice.setDateTime(LocalDateTime.now());
 
                 aggregatedPriceRepository.save(updatedPrice);
-                log.info("Updated latest price for {} from {}", updatedPrice.getPairType(), updatedPrice.getSource());
+                // log.info("Updated latest price for {} from {}", updatedPrice.getPairType(), updatedPrice.getSource());
             }
             // Store as the new best pricing
             else{
                 aggregatedPriceRepository.save(newPrice);
-                log.info("Added {} from {} to the database", newPrice.getPairType(), newPrice.getSource());
+                // log.info("Added {} from {} to the database", newPrice.getPairType(), newPrice.getSource());
             }
         }
         catch (JpaSystemException e) {
