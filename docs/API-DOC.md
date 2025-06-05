@@ -24,6 +24,7 @@
 **URL:** `POST /api/trade/processorder`
 
 **Description:** Post request to buy or sell BTC and ETH and return the transaction record.
+
 **Request:**
 ```json
 {
