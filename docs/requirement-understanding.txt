@@ -40,3 +40,6 @@ ERD
 
 Additional note
 - Best price would means storing the latest record for each of the btcusdt & ethusdt from each of the source
+- Every 10 sec, have been storing the best. Hence, pull each record from the db, compare the best bid and ask price. 
+- Highest bid price: The best price a buyer offers to buy at, good for sellers because they earn more.
+- Lowest ask price: The best price a seller offers to sell at, good for buyers because they pay less.
