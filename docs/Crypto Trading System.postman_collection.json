@@ -1,0 +1,111 @@
+{
+	"info": {
+		"_postman_id": "a5ed45f3-1788-41f0-a89a-aa236089fff0",
+		"name": "Crypto Trading System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16361164"
+	},
+	"item": [
+		{
+			"name": "Retrieve best latest aggregated price",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:2025/api/prices/aggregatedprice",
+					"host": [
+						"localhost"
+					],
+					"port": "2025",
+					"path": [
+						"api",
+						"prices",
+						"aggregatedprice"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Execute trade",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\" : \"test-user\",\r\n    \"cryptoType\" : \"ETH\",\r\n    \"purchaseType\" : \"buy\",\r\n    \"quantity\" : \"0.01\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:2025/api/trade/processorder",
+					"host": [
+						"localhost"
+					],
+					"port": "2025",
+					"path": [
+						"api",
+						"trade",
+						"processorder"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve all user's wallets",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "userId",
+						"value": "test-user",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:2025/api/wallet/retrievewallets",
+					"host": [
+						"localhost"
+					],
+					"port": "2025",
+					"path": [
+						"api",
+						"wallet",
+						"retrievewallets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve transaction history",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "userId",
+						"value": "test-user",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:2025/api/trade/history",
+					"host": [
+						"localhost"
+					],
+					"port": "2025",
+					"path": [
+						"api",
+						"trade",
+						"history"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
