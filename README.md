@@ -22,6 +22,8 @@ Password: (leave blank)
 
 - Tables are auto-created based on JPA entities.
 
+- Data is volatile and resets on restart 
+
 - Sample data is seeded via data.sql
 
 > File location: src\main\resources\
