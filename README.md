@@ -8,6 +8,8 @@
 
 [API Documentation](./docs/API-DOC.md)
 
+[Postman Collection](https://github.com/RyanChaii/crypto_trading_system/blob/bcf28790d66777f8a149dbdb3fd386a0d5e7bc04/docs/Crypto%20Trading%20System.postman_collection.json)
+
 ## Database
 
 ```
@@ -27,7 +29,6 @@ Password: (leave blank)
 - Sample data is seeded via data.sql
 
 > File location: src\main\resources\
-
 
 ## Unit Testing
 
