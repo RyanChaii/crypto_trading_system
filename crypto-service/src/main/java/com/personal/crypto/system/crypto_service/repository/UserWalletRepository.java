@@ -12,4 +12,6 @@ public interface UserWalletRepository extends JpaRepository<UserWallet, Long>{
     List<UserWallet> findByUserId(String userId);  // get all wallet balances
 
     Optional<UserWallet> findByUserIdAndCryptoCurrency(String userId, String cryptoCurrency);
+
+    boolean existsByUserId(String userId);
 }

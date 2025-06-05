@@ -2,6 +2,7 @@ package com.personal.crypto.system.crypto_service.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class TradeService {
     }
 
     public TradeResponse processTrade(TradeRequest incomingTrade) {
+
+        // Validate incoming trade request
+        requestValidation(incomingTrade);
 
         // Retrieve best price from price service
         Map<String, AggregatedPriceResponse> bestPrice = priceService.getBestAggregatedPrices();
@@ -141,5 +145,35 @@ public class TradeService {
         // Save the record
         tradeTransactionRepository.save(newRecord);
         log.info("Successful transaction recorded");
+    }
+
+    public void requestValidation (TradeRequest incomingTradeRequest) {
+        // Validate userId
+        if (incomingTradeRequest.getUserId() == null || incomingTradeRequest.getUserId().isBlank()) {
+            throw new IllegalArgumentException("User ID is required");
+        }
+
+        if (!userWalletRepository.existsByUserId(incomingTradeRequest.getUserId())) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        // Validate cryptoType
+        String cryptoType = incomingTradeRequest.getCryptoType().toUpperCase();
+        if (!List.of("BTC", "ETH").contains(cryptoType)) {
+            throw new IllegalArgumentException("Only BTC and ETH are supported");
+        }
+
+        // Validate purchaseType
+        String purchaseType = incomingTradeRequest.getPurchaseType().toUpperCase();
+        if (!List.of("BUY", "SELL").contains(purchaseType)) {
+            throw new IllegalArgumentException("Purchase type must be BUY or SELL");
+        }
+
+        // Validate quantity
+        BigDecimal qty = incomingTradeRequest.getQuantity();
+        if (qty == null || qty.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+
     }
 }
