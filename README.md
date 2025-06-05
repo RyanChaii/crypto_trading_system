@@ -34,6 +34,6 @@
 
 right-click the TradeServiceTest.java file -> Run java
 
-> Test file are located in: src\test\java\com\personal\crypto\system\crypto_service\
+> File location: src\test\java\com\personal\crypto\system\crypto_service\
 
 
