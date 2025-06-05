@@ -2,6 +2,7 @@
 
 ## 1. Get Latest Aggregated Prices
 **URL:** `GET /api/prices/aggregatedprice`
+
 **Description:** Returns the best bid and ask prices for BTCUSDT and ETHUSDT.  
 **Response:**
 ```json
