@@ -33,7 +33,7 @@ public class WalletService {
         }
 
         // Simple wallet validation
-        Set<String> supportedCurrencies = Set.of("BTC", "ETH");
+        Set<String> supportedCurrencies = Set.of("BTC", "ETH", "USDT");
 
         for (UserWallet wallet : allWallets) {
             String currency = wallet.getCryptoCurrency().toUpperCase();

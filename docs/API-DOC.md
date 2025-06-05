@@ -56,15 +56,15 @@
 [
     {
         "currencyType": "USDT",
-        "balance": 50000.00000000
+        "balance": 44453.07500000
     },
     {
         "currencyType": "BTC",
-        "balance": 0E-8
+        "balance": 0.05000000
     },
     {
         "currencyType": "ETH",
-        "balance": 0E-8
+        "balance": 0.10000000
     }
 ]
 ```
