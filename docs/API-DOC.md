@@ -43,3 +43,28 @@
     "cryptoBalance": 0.05000000
 }
 ```
+
+## 3. Retrieve User's Crypto Currencies Wallet Balance
+**URL:** `GET /api/wallet/retrievewallets`
+
+**Description:** Get request that retrieve all wallet balance for that user.
+
+**Request Header:** `key: usedId, value: test-user`
+
+**Response:**
+```json
+[
+    {
+        "currencyType": "USDT",
+        "balance": 50000.00000000
+    },
+    {
+        "currencyType": "BTC",
+        "balance": 0E-8
+    },
+    {
+        "currencyType": "ETH",
+        "balance": 0E-8
+    }
+]
+```
