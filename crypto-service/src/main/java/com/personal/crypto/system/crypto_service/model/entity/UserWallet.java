@@ -31,4 +31,10 @@ public class UserWallet {
     @Column(name = "wallet_balance", precision = 18, scale = 8)
     @Setter
     private BigDecimal walletBalance;
+
+    public UserWallet(String userId, String cryptoCurrency, BigDecimal walletBalance) {
+        this.userId = userId;
+        this.cryptoCurrency = cryptoCurrency;
+        this.walletBalance = walletBalance;
+    }
 }
