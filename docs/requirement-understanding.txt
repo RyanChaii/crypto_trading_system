@@ -44,3 +44,4 @@ Additional note
 - Highest bid price: The best price a buyer offers to buy at, good for sellers because they earn more.
 - Lowest ask price: The best price a seller offers to sell at, good for buyers because they pay less.
 - Assume all currency type are created for the user when the user account is created.
+- Due to how much decimal it can have, precision = 18, scale = 8 are added to more accurately display the number

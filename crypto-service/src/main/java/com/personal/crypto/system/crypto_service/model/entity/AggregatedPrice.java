@@ -26,11 +26,11 @@ public class AggregatedPrice {
     @Setter
     private String pairType;
 
-    @Column(name = "bid_price")
+    @Column(name = "bid_price", precision = 18, scale = 8)
     @Setter
     private BigDecimal bidPrice;
 
-    @Column(name = "ask_price")
+    @Column(name = "ask_price", precision = 18, scale = 8)
     @Setter
     private BigDecimal askPrice;
 
