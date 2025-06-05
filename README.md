@@ -1,6 +1,6 @@
 # Crypto Trading System
 
-<h3>Docs</h3>
+## Docs
 
 [Requirement Understanding](./docs/requirement-understanding.txt)
 
@@ -8,7 +8,7 @@
 
 [API Documentation](./docs/API-DOC.md)
 
-<h3>Unit Testing<h3>
+## Unit Testing
 
 <h5>This project includes unit tests focused on core trade functionality using JUnit 5 and Mockito.</h5>
 
