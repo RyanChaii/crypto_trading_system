@@ -1,6 +1,7 @@
 package com.personal.crypto.system.crypto_service.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
@@ -8,7 +9,9 @@ import org.springframework.stereotype.Service;
 import com.personal.crypto.system.crypto_service.model.dto.AggregatedPriceResponse;
 import com.personal.crypto.system.crypto_service.model.dto.TradeRequest;
 import com.personal.crypto.system.crypto_service.model.dto.TradeResponse;
+import com.personal.crypto.system.crypto_service.model.entity.TradeTransaction;
 import com.personal.crypto.system.crypto_service.model.entity.UserWallet;
+import com.personal.crypto.system.crypto_service.repository.TradeTransactionRepository;
 import com.personal.crypto.system.crypto_service.repository.UserWalletRepository;
 
 import lombok.extern.log4j.Log4j2;
@@ -19,10 +22,13 @@ public class TradeService {
     
     private final UserWalletRepository userWalletRepository;
 
+    private final TradeTransactionRepository tradeTransactionRepository;
+
     private final PriceService priceService;
 
-    public TradeService(UserWalletRepository userWalletRepository, PriceService priceService) {
+    public TradeService(UserWalletRepository userWalletRepository, TradeTransactionRepository tradeTransactionRepository, PriceService priceService) {
         this.userWalletRepository = userWalletRepository;
+        this.tradeTransactionRepository = tradeTransactionRepository;
         this.priceService = priceService;
     }
 
@@ -41,6 +47,7 @@ public class TradeService {
         // Retrieve the best price based on desired currency
         AggregatedPriceResponse bestCurrencyPrice = bestPrice.get(formattedCurrencyType);
         BigDecimal purchaseQuantity = incomingTrade.getQuantity();
+        String userId = incomingTrade.getUserId();
 
         if ("buy".equalsIgnoreCase(incomingTrade.getPurchaseType())) {
 
@@ -61,6 +68,11 @@ public class TradeService {
             userTradeWallet.setWalletBalance(userTradeWallet.getWalletBalance().add(purchaseQuantity));
             userWalletRepository.save(userTradeWallet);
 
+            // Create trade record
+            TradeTransaction newRecord = new 
+            TradeTransaction(userId, incomingTrade.getPurchaseType(), formattedCurrencyType, bestAskPrice, purchaseQuantity, totalAskCost, LocalDateTime.now());
+            // Save the record
+            tradeTransactionRepository.save(newRecord);
         }
 
         if ("sell".equalsIgnoreCase(incomingTrade.getPurchaseType())) {
