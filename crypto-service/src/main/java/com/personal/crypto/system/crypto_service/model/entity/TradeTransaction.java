@@ -49,6 +49,10 @@ public class TradeTransaction {
     @Setter
     private LocalDateTime dateTime;
 
+    // Needed by JPA
+    public TradeTransaction () {
+    }
+
     public TradeTransaction (String userId, String tradeType, String pairType, BigDecimal price, BigDecimal amount, BigDecimal totalValue, LocalDateTime dateTime) {
         this.userId = userId;
         this.tradeType = tradeType;
@@ -59,7 +63,4 @@ public class TradeTransaction {
         this.dateTime = dateTime;
     }
 
-    public TradeTransaction () {
-        
-    }
 }

@@ -32,6 +32,10 @@ public class UserWallet {
     @Setter
     private BigDecimal walletBalance;
 
+    // Needed by JPA
+    public UserWallet() {
+    }
+
     public UserWallet(String userId, String cryptoCurrency, BigDecimal walletBalance) {
         this.userId = userId;
         this.cryptoCurrency = cryptoCurrency;
