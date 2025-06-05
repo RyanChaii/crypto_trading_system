@@ -118,6 +118,7 @@ public class TradeService {
 
         catch (Exception e) {
             log.atError().withThrowable(e).log("Unexpected error: {}", e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }
         
         return tradeStatusResponse;
