@@ -13,13 +13,13 @@ import lombok.Setter;
 public class TradeRequest {
 
     private String userId;
-    private String pairType;
+    private String cryptoType;
     private String purchaseType; // buy or sell
     private BigDecimal quantity;
 
-    public TradeRequest(String userId, String pairType, String purchaseType, BigDecimal quantity) {
+    public TradeRequest(String userId, String cryptoType, String purchaseType, BigDecimal quantity) {
         this.userId = userId;
-        this.pairType = pairType;
+        this.cryptoType = cryptoType;
         this.purchaseType = purchaseType;
         this.quantity = quantity;
     }
