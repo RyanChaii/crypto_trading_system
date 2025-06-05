@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.personal.crypto.system.crypto_service.model.dto.AggregatedPriceResponse;
+import com.personal.crypto.system.crypto_service.model.dto.TradeHistoryResponse;
 import com.personal.crypto.system.crypto_service.model.dto.TradeRequest;
 import com.personal.crypto.system.crypto_service.model.dto.TradeResponse;
 import com.personal.crypto.system.crypto_service.model.entity.TradeTransaction;
@@ -33,6 +35,7 @@ public class TradeService {
         this.priceService = priceService;
     }
 
+    // Main service method to process trade
     public TradeResponse processTrade(TradeRequest incomingTrade) {
 
         // Validate incoming trade request
@@ -182,6 +185,44 @@ public class TradeService {
         BigDecimal qty = incomingTradeRequest.getQuantity();
         if (qty == null || qty.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
+
+    }
+
+    // main method to retrieve trade transaction record
+    public List<TradeHistoryResponse> getTradeHistory(String userId) {
+
+        // Validate user id
+        userIdValidation(userId);
+
+        // Retrieve trade transaction history
+        List<TradeTransaction> userTrades = tradeTransactionRepository.findByUserIdOrderByDateTimeDesc(userId);
+
+        // Stream thru userTrades and convert to TradeHistoryResponse DTO
+        List<TradeHistoryResponse> userHistory = userTrades.stream()
+        .map(t -> new TradeHistoryResponse(
+            t.getUserId(),
+            t.getTradeType(),
+            t.getPairType(),
+            t.getPrice(),
+            t.getAmount(),
+            t.getTotalValue(),
+            t.getDateTime()
+        ))
+        .collect(Collectors.toList());
+        
+        
+        return userHistory;
+    }
+
+    public void userIdValidation (String userId) {
+        // Validate userId
+        if (userId.isBlank()) {
+            throw new IllegalArgumentException("User ID is required");
+        }
+
+        if (!userWalletRepository.existsByUserId(userId)) {
+            throw new IllegalArgumentException("User not found");
         }
 
     }
